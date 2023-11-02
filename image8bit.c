@@ -11,10 +11,12 @@
 
 // Student authors (fill in below):
 // NMec:  Name:
-// 
-// 
-// 
-// Date:
+//
+//    117808  Jan Jurgen Luzgin 
+//    117852  Kregor Urvet 
+//    117925  Oliver Sild 
+//
+// Date:  02.11.2023
 //
 
 #include "image8bit.h"
