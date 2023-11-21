@@ -172,6 +172,27 @@ Image ImageCreate(int width, int height, uint8 maxval) { ///
   assert (height >= 0);
   assert (0 < maxval && maxval <= PixMax);
   // Insert your code here!
+  // Image img = (Image) malloc(sizeof(struct image));
+  // if(img == NULL){
+  //   errCause = "Memory allocation for image failed";
+  //   //free(img);  <-- From the provided comment I assume this is the responsibility of the caller
+  //   // errno = ENOMEM;  <--- IDK what to store in errno
+  //   return NULL;
+  // }
+
+  // img->width = width;
+  // img->height = height;
+  // img->maxval = maxval;
+  
+  // memset(img->pixel, 0, width*height*sizeof(uint8));
+  // OTHER OPTION
+  // for (int i = 0; i < width * height; ++i) {
+  //   img->pixel[i] = 0;
+  // }
+  //
+  // memset is generally recommended for initializing large blocks of memory
+  // because it can be more efficient than manualy iterating through each element
+
 }
 
 /// Destroy the image pointed to by (*imgp).
@@ -182,6 +203,12 @@ Image ImageCreate(int width, int height, uint8 maxval) { ///
 void ImageDestroy(Image* imgp) { ///
   assert (imgp != NULL);
   // Insert your code here!
+  // free((*imgp)->pixel);
+  // free((*imgp)->height);
+  // free((*imgp)->width);
+  // free((*imgp)->maxval);
+  // free(*imgp);
+  // *imgp = NULL; // To avoid dangling pointers
 }
 
 

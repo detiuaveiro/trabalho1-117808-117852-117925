@@ -11,7 +11,7 @@ the function: the range of valid parameter values.
 The caller is responsible for ensuring the preconditions before calling
 the function, but that does not necessarily lead to extra work.
 The benefit is that the called function can assume these conditions and
-so needs not worry about parameters outside the domain.
+thus doesnt need to worry about parameters outside the domain.
 Because of this, there is no need for invalid arguments error codes.
 However, the function might (and should) check preconditions using
 assert() clauses in the preamble of the function.
