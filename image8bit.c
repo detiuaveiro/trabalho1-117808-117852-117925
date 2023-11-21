@@ -403,9 +403,9 @@ void ImageNegative(Image img) { ///
   int height = img->height;
 
   // Goes through evey pixel in the image
-  for (int y = 0; y < height; ++y) 
+  for (int y = 0; y < height; y++) 
   {
-    for (int x = 0; x < width; ++x) 
+    for (int x = 0; x < width; x++) 
     {
       // gets the value of current pixel
       uint8 currentPixel = ImageGetPixel(img, x, y);
@@ -423,6 +423,15 @@ void ImageNegative(Image img) { ///
 void ImageThreshold(Image img, uint8 thr) { ///
   assert (img != NULL);
   // Insert your code here!
+  for(int y = 0; y < img->height; y++){
+    for (int x = 0; x < img->width; x++)
+    {
+      uint8 currentPixel = ImageGetPixel(img, x, y);
+      if(currentPixel < thr) ImageSetPixel(img,x,y,0);
+      else ImageSetPixel(img,x,y,img->maxval);
+      assert(currentPixel != ImageGetPixel(img, x, y)); // Might not be needed
+    }    
+  }
 }
 
 /// Brighten image by a factor.
@@ -431,8 +440,17 @@ void ImageThreshold(Image img, uint8 thr) { ///
 /// darken the image if factor<1.0.
 void ImageBrighten(Image img, double factor) { ///
   assert (img != NULL);
-  // ? assert (factor >= 0.0);
+  assert (factor >= 0.0);
   // Insert your code here!
+  int maxvalue = img->maxval;
+  for(int y = 0; y < img->height; y++){
+    for (int x = 0; x < img->width; x++)
+    {
+      uint8 currentPixel = ImageGetPixel(img, x, y);
+      uint8 newPixelValue = currentPixel * factor < maxvalue ? currentPixel * factor : maxvalue; // Returns the smaller value out of the two
+      ImageSetPixel(img, x, y, newPixelValue);
+    }    
+  }
 }
 
 
