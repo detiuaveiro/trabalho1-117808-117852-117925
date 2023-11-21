@@ -383,6 +383,23 @@ void ImageSetPixel(Image img, int x, int y, uint8 level) { ///
 void ImageNegative(Image img) { ///
   assert (img != NULL);
   // Insert your code here!
+  
+  int width = img->width;
+  int height = img->height;
+
+  // Goes through evey pixel in the image
+  for (int y = 0; y < height; ++y) 
+  {
+    for (int x = 0; x < width; ++x) 
+    {
+      // gets the value of current pixel
+      uint8 currentPixel = ImageGetPixel(img, x, y);
+
+      // Calculates the negative value of the pixel and saves it
+      uint8 negativePixel = PixMax - currentPixel;
+      ImageSetPixel(img, x, y, negativePixel);
+    }
+  }
 }
 
 /// Apply threshold to image.
@@ -440,6 +457,28 @@ Image ImageRotate(Image img) { ///
 Image ImageMirror(Image img) { ///
   assert (img != NULL);
   // Insert your code here!
+  int width = img->width;
+  int height = img->height;
+
+  // Create a new image for the mirrored result
+  Image mirror_Img = ImageCreate(width, height, img->maxval);
+
+  if (mirror_Img == NULL) {
+    // Handle memory allocation failure
+    return NULL;
+  }
+  for (int y = 0; y < height; ++y) 
+  {
+    for (int x = 0; x < width; ++x) 
+    {
+      uint8 pixelValue = ImageGetPixel(img, x, y);  //Gets the value from the OG picture
+
+      // gets the new flipped value for X
+      int mirroredX = width - 1 - x;
+      ImageSetPixel(mirror_Img, mirroredX, y, pixelValue);
+    }
+  }
+  return mirror_Img;
 }
 
 /// Crop a rectangular subimage from img.
