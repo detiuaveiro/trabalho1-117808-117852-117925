@@ -192,7 +192,7 @@ Image ImageCreate(int width, int height, uint8 maxval) { ///
     return NULL;
   }
   // OTHER OPTION
-  for (int i = 0; i < width * height; ++i) {
+  for (int i = 0; i < width * height; i++) {
     img->pixel[i] = 0;
   }
   // memset(img->pixel, 0, width*height*sizeof(uint8));
@@ -324,6 +324,17 @@ int ImageMaxval(Image img) { ///
 void ImageStats(Image img, uint8* min, uint8* max) { ///
   assert (img != NULL);
   // Insert your code here!
+  *min = img->maxval;
+  *max = 0;
+  
+  for(int y = 0; y < img->height; y++){
+    for(int x = 0; x < img->width; x++){
+      uint8 pixel = ImageGetPixel(img, x, y);
+
+      if(pixel < *min) *min = pixel;
+      if(pixel > *max) *max = pixel;
+    }
+  }
 }
 
 /// Check if pixel position (x,y) is inside img.
@@ -351,6 +362,7 @@ int ImageValidRect(Image img, int x, int y, int w, int h) { ///
 static inline int G(Image img, int x, int y) {
   int index;
   // Insert your code here!
+  index = y * img->width + x;
   assert (0 <= index && index < img->width*img->height);
   return index;
 }
@@ -470,12 +482,11 @@ Image ImageMirror(Image img) { ///
     // Handle memory allocation failure
     return NULL;
   }
-  for (int y = 0; y < height; ++y) 
+  for (int y = 0; y < height; y++) 
   {
-    for (int x = 0; x < width; ++x) 
+    for (int x = 0; x < width; x++) 
     {
       uint8 pixelValue = ImageGetPixel(img, x, y);  //Gets the value from the OG picture
-
       // gets the new flipped value for X
       int mirroredX = width - 1 - x;
       ImageSetPixel(mirror_Img, mirroredX, y, pixelValue);
