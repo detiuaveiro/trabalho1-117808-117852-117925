@@ -1,83 +1,55 @@
-# Trabalho1 AED 2023-2024
+# Work1 AED 2023-2024
 
-Este é o código-fonte para o primeiro projeto de AED 2023-2024.
+This is the source code for the first AED 2023-2024 project.
 
-## Ficheiros
+## Files
 
-- `image8bit.c` - implementação do módulo (a COMPLETAR)
-- `image8bit.h` - interface do módulo
-- `instrumentation.[ch]` - módulo para contagens de operações e medição de tempos
-- `imageTest.c` - programa de teste simples
-- `imageTool.c` - programa de teste mais versátil
-- `Makefile` - regras para compilar e testar usando `make`
+- `image8bit.c` - module implementation (to be COMPLETED)
+- `image8bit.h` - module interface
+- `instrumentation.[ch]` - module for counting operations and measuring times
+- `imageTest.c` - simple test program
+- `imageTool.c` - more versatile test program
+- `Makefile` - rules for compiling and testing using `make`
 
-- `README.md` - estas informações que está a ler
-- `Design-by-Contract.md` - explicação sobre [metodologia DbC][dbc],
-   seguida neste projeto.
+- `README.md` - this information you are reading
+- `Design-by-Contract.md` - explanation of [DbC methodology][dbc],
+   followed in this project.
 
 
 [dbc]: Design-by-Contract.md
 
-## Descarregar imagens
+## Download images
 
-Execute:
+Run:
 
-- `make pgm` - para descarregar imagens para pasta `pgm/`
-- `make setup` - para descarregar imagens para testes em `test/`
+- `make pgm` - to download images to `pgm/` folder
+- `make setup` - to download images for tests in `test/`
 
-## Compilar
+## Compile
 
-- `make` - Compila e gera os programas de teste.
-- `make clean` - Limpa ficheiros objeto e executáveis.
+- `make` - Compiles and generates the test programs.
+- `make clean` - Clean up object and executable files.
 
 
-## Sugestões para o desenvolvimento
+## Suggestions for development
 
-Sugere-se o desenvolvimento progressivo pela seguinte ordem:
+We suggest progressive development in the following order:
 
-1. Completar `ImageCreate` e `ImageDestroy`.
-2. Compilar os programas correndo `make`
-   e testar com
+1. Complete `ImageCreate` and `ImageDestroy`.
+2. Compile the programs by running `make`
+   and test with
 
    ```bash
    valgrind ./imageTool test/original.pgm save out.pgm`
    ```
    
-   Isto chama `ImageLoad`, que chama `ImageCreate`
-   e depois `ImageSave` e `ImageDestroy`.
-   Verificar que toda a memória foi libertada.
-3. Completar a função interna `G`,
-   que é usada por `ImageSetPixel` e `ImageGePixel`.
-4. Completar `ImageStats`.
-   Se usar `ImageGePixel`, permitirá testar `G`.
-   Testar com `./imageTool test/original.pgm info`.
-5. Completar `ImageNegative`, `ImageThreshold`, `ImageBrighten`.
-6. Completar `ImageValidRect`.
-7. Completar `ImageMirror`, `ImageRotate`.
-8. Completar `ImageCrop`, `ImagePaste` e `ImageBlend`.
-9. Completar `ImageMatchSubImage` e `ImageLocateSubImage`.
-10. Completar `ImageBlur`.
+   This calls `ImageLoad`, which calls `ImageCreate`
+   and then `ImageSave` and `ImageDestroy`.
+   Check that all memory has been freed.
+3. Complete the internal function `G`,
+   which is used by `ImageSetPixel` and `ImageGePixel`.
+4. Complete `ImageStats`.
+   If you use `ImageGePixel`, it will allow you to test `G`.
+   Test with `./imageTool 
 
-Pode executar `make test1`, `make test2`, etc.
-para fazer testes simples a muitas destas funções.
-Mas faça outros testes que considere adequados.
-
-## Atualizar repositório
-
-
-Dada a natureza do trabalho, poderá ser necessário
-atualizar repositório base (upstream) deste projeto.
-Se isso acontecer, deverá atualizar o seu repositório com os seguintes comandos:
-
-```bash
-# Fazer esta apenas 1 vez:
-git remote add upstream https://github.com/detiuaveiro/image8bit-pub.git
-
-git fetch upstream
-git checkout main
-git merge --allow-unrelated-histories upstream/main
-# (Resolver quaisquer conflitos que surjam...)
-git commit
-```
-
-
+Translated with www.DeepL.com/Translator (free version)
