@@ -11,12 +11,10 @@
 
 // Student authors (fill in below):
 // NMec:  Name:
-//
-//    117808  Jan Jurgen Luzgin 
-//    117852  Kregor Urvet 
-//    117925  Oliver Sild 
-//
-// Date:  02.11.2023
+// 
+// 
+// 
+// Date:
 //
 
 #include "image8bit.h"
@@ -394,7 +392,7 @@ void ImageBrighten(Image img, double factor) { ///
 
 /// Rotate an image.
 /// Returns a rotated version of the image.
-/// The rotation is 90 degrees clockwise.
+/// The rotation is 90 degrees anti-clockwise.
 /// Ensures: The original img is not modified.
 /// 
 /// On success, a new image is returned.
