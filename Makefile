@@ -5,7 +5,7 @@
 # make clean        # to cleanup object files and executables
 # make cleanobj     # to cleanup object files only
 
-CFLAGS = -Wall -O2 -g
+CFLAGS = -Wall -O2 -g -lm
 
 PROGS = imageTool imageTest
 
@@ -40,6 +40,8 @@ test/:
 test1: $(PROGS) setup
 	./imageTool test/original.pgm neg save neg.pgm
 	cmp neg.pgm test/neg.pgm
+	@echo "Test 1: Result compared"
+
 
 test2: $(PROGS) setup
 	./imageTool test/original.pgm thr 128 save thr.pgm

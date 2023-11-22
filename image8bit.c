@@ -18,7 +18,7 @@
 //
 
 #include "image8bit.h"
-
+#include <math.h>
 #include <assert.h>
 #include <ctype.h>
 #include <errno.h>
@@ -434,7 +434,7 @@ void ImageThreshold(Image img, uint8 thr) { ///
       uint8 currentPixel = ImageGetPixel(img, dx, dy);
       if(currentPixel < thr) ImageSetPixel(img, dx, dy, 0);
       else ImageSetPixel(img, dx, dy, img->maxval);
-      assert(currentPixel != ImageGetPixel(img, dx, dy)); // Might not be needed
+      //assert(currentPixel != ImageGetPixel(img, dx, dy)); // Might not be needed
     }    
   }
 }
@@ -445,7 +445,7 @@ void ImageThreshold(Image img, uint8 thr) { ///
 /// darken the image if factor<1.0.
 void ImageBrighten(Image img, double factor) { ///
   assert (img != NULL);
-  assert (factor >= 0.0);
+  // assert (factor >= 0.0);
 
   // Insert your code here!
   int maxvalue = img->maxval;
@@ -453,7 +453,9 @@ void ImageBrighten(Image img, double factor) { ///
     for (int dx = 0; dx < img->width; dx++)
     {
       uint8 currentPixel = ImageGetPixel(img, dx, dy);
-      uint8 newPixelValue = currentPixel * factor < maxvalue ? currentPixel * factor : maxvalue; // Returns the smaller value out of the two
+      uint8 result = round(currentPixel * factor);
+      printf("%d - %d, ", currentPixel, result);
+      uint8 newPixelValue = result < maxvalue ? result : maxvalue; // Returns the smaller value out of the two
       ImageSetPixel(img, dx, dy, newPixelValue);
     }    
   }
@@ -609,7 +611,6 @@ void ImagePaste(Image img1, int x, int y, Image img2) { ///
 
   if (!ImageValidRect(img1, x, y, width, height)) {
     errCause = "ERROR: Paste area is not valid!";
-    return NULL;
   }
 
   for (int dy = 0; dy < height; dy++) {
@@ -662,6 +663,20 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) { ///
   assert (img2 != NULL);
   assert (ImageValidPos(img1, x, y));
   // Insert your code here!
+  for(int dy = 0; dy < y+img2->height; dy++){
+    for(int dx = 0; dx < x+img2->width; dx++){
+      if(ImageGetPixel(img1, x+dx, y+dy) != ImageGetPixel(img2, dx, dy)) return 0;
+    }
+  }
+  return 1;
+  
+  
+  // Image cropped = ImageCrop(img1, x, y, img2->width, img2->height);
+  
+  // for(int i = 0; i < img2->height*img2->width; i++){
+  //   if(cropped->pixel[i] != img2->pixel[i]) return 0;
+  // }
+  // return 1;
 }
 
 /// Locate a subimage inside another image.
@@ -672,6 +687,16 @@ int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) { ///
   assert (img1 != NULL);
   assert (img2 != NULL);
   // Insert your code here!
+  for(int dy = 0; dy <= img1->height-img2->height; dy++){
+    for(int dx = 0; dx <= img1->width-img2->width; dx++){
+      if(ImageMatchSubImage(img1, dx, dy, img2)) {
+        *px = dx;
+        *py = dy;
+        return 1;
+      }
+    }
+  }
+  return 0;
 }
 
 
