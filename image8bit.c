@@ -645,5 +645,63 @@ int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) { ///
 /// The image is changed in-place.
 void ImageBlur(Image img, int dx, int dy) { ///
   // Insert your code here!
-}
 
+  assert(img != NULL);
+  assert(dx >= 0 && dy >= 0);
+
+  int width = img->width;
+  int height = img->height;
+
+  Image blurredImg = ImageCreate(width, height, img->maxval);     //Temp storage for result
+
+  if (blurredImg == NULL) 
+  {
+    return;
+  }
+
+  // Applying the filter ro all pixels
+  for (int y = 0; y < height; y++) 
+  {
+    for (int x = 0; x < width; x++)
+    {
+      int sum = 0;
+      int cnt = 0;
+
+      // Calculate the avg value of pixels
+      for (int dy_i = -dy; dy_i <= dy; dy_i++)
+      {
+        for (int dx_i = -dx; dx_i <= dx; dx_i++)
+        {
+          int nx = x + dx_i;
+          int ny = y + dy_i;
+
+          if (ImageValidPos(img, nx, ny))
+          {
+            sum += ImageGetPixel(img, nx, ny);
+            cnt++;
+          }
+        }
+      }
+
+      // Setting new value for blurred pixl
+      if (cnt > 0) 
+      {
+        uint8 meanValue = (uint8)(sum / cnt);
+        ImageSetPixel(blurredImg, x, y, meanValue);
+      }
+    }
+  }
+
+  // Copy the blurred result back to the original image
+  for (int y = 0; y < height; y++) 
+  {
+    for (int x = 0; x < width; x++) 
+    {
+      uint8 pixelValue = ImageGetPixel(blurredImg, x, y);
+      ImageSetPixel(img, x, y, pixelValue);
+    }
+  }
+
+  // Destroy the temporary image
+  ImageDestroy(&blurredImg);
+}
