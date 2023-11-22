@@ -346,7 +346,12 @@ int ImageValidPos(Image img, int x, int y) { ///
 /// Check if rectangular area (x,y,w,h) is completely inside img.
 int ImageValidRect(Image img, int x, int y, int w, int h) { ///
   assert (img != NULL);
-  // Insert your code here!
+
+  int width = img->width;
+  int height = img->height;
+
+  if ((x + w) > width || (y + h) > height) return 0;
+  return 1;
 }
 
 /// Pixel get & set operations
@@ -478,6 +483,32 @@ void ImageBrighten(Image img, double factor) { ///
 Image ImageRotate(Image img) { ///
   assert (img != NULL);
   // Insert your code here!
+  int width = img->width;
+  int height = img->height;
+  uint8 pixelValue;
+
+  Image rotate_Img = ImageCreate(width, height, img->maxval);
+
+  if (rotate_Img == NULL) {
+    // Handle memory allocation failure
+    return NULL;
+  }
+
+  // Step 1: Transpose the matrix
+  for (int x = 0; x < width; x++) {
+      for (int y = 0; y < height; y++) {
+          ImageSetPixel(rotate_Img, y, x, ImageGetPixel(img, x, y));
+      }
+  }
+
+  // Step 2: Reverse each column
+  for (int x = 0; x < width; x++) {
+      for (int y = 0, k = height - 1; y < k; y++, k--) {
+          pixelValue = ImageGetPixel(img, x, y);
+          ImageSetPixel(rotate_Img, x, y, ImageGetPixel(img, k, y));
+          ImageSetPixel(rotate_Img, k, y, pixelValue);
+      }
+  }
 }
 
 /// Mirror an image = flip left-right.
@@ -500,10 +531,8 @@ Image ImageMirror(Image img) { ///
     // Handle memory allocation failure
     return NULL;
   }
-  for (int y = 0; y < height; y++) 
-  {
-    for (int x = 0; x < width; x++) 
-    {
+  for (int y = 0; y < height; y++) {
+    for (int x = 0; x < width; x++) {
       uint8 pixelValue = ImageGetPixel(img, x, y);  //Gets the value from the OG picture
       // gets the new flipped value for X
       int mirroredX = width - 1 - x;
