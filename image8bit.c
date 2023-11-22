@@ -327,9 +327,9 @@ void ImageStats(Image img, uint8* min, uint8* max) { ///
   *min = img->maxval;
   *max = 0;
   
-  for(int y = 0; y < img->height; y++){
-    for(int x = 0; x < img->width; x++){
-      uint8 pixel = ImageGetPixel(img, x, y);
+  for(int dy = 0; dy < img->height; dy++){
+    for(int dx = 0; dx < img->width; dx++){
+      uint8 pixel = ImageGetPixel(img, dx, dy);
 
       if(pixel < *min) *min = pixel;
       if(pixel > *max) *max = pixel;
@@ -367,7 +367,7 @@ int ImageValidRect(Image img, int x, int y, int w, int h) { ///
 static inline int G(Image img, int x, int y) {
   int index;
   // Insert your code here!
-  index = y * img->width + x;
+  index = y  * img->width + x;
   assert (0 <= index && index < img->width*img->height);
   return index;
 }
@@ -408,16 +408,16 @@ void ImageNegative(Image img) { ///
   int height = img->height;
 
   // Goes through evey pixel in the image
-  for (int y = 0; y < height; y++) 
+  for (int dy = 0; dy < height; dy++) 
   {
-    for (int x = 0; x < width; x++) 
+    for (int dx = 0; dx < width; dx++) 
     {
       // gets the value of current pixel
-      uint8 currentPixel = ImageGetPixel(img, x, y);
+      uint8 currentPixel = ImageGetPixel(img, dx, dy);
 
       // Calculates the negative value of the pixel and saves it
       uint8 negativePixel = PixMax - currentPixel;
-      ImageSetPixel(img, x, y, negativePixel);
+      ImageSetPixel(img, dx, dy, negativePixel);
     }
   }
 }
@@ -428,13 +428,13 @@ void ImageNegative(Image img) { ///
 void ImageThreshold(Image img, uint8 thr) { ///
   assert (img != NULL);
   // Insert your code here!
-  for(int y = 0; y < img->height; y++){
-    for (int x = 0; x < img->width; x++)
+  for(int dy = 0; dy < img->height; dy++){
+    for (int dx = 0; dx < img->width; dx++)
     {
-      uint8 currentPixel = ImageGetPixel(img, x, y);
-      if(currentPixel < thr) ImageSetPixel(img,x,y,0);
-      else ImageSetPixel(img,x,y,img->maxval);
-      assert(currentPixel != ImageGetPixel(img, x, y)); // Might not be needed
+      uint8 currentPixel = ImageGetPixel(img, dx, dy);
+      if(currentPixel < thr) ImageSetPixel(img, dx, dy, 0);
+      else ImageSetPixel(img, dx, dy, img->maxval);
+      assert(currentPixel != ImageGetPixel(img, dx, dy)); // Might not be needed
     }    
   }
 }
@@ -446,14 +446,15 @@ void ImageThreshold(Image img, uint8 thr) { ///
 void ImageBrighten(Image img, double factor) { ///
   assert (img != NULL);
   assert (factor >= 0.0);
+
   // Insert your code here!
   int maxvalue = img->maxval;
-  for(int y = 0; y < img->height; y++){
-    for (int x = 0; x < img->width; x++)
+  for(int dy = 0; dy < img->height; dy++){
+    for (int dx = 0; dx < img->width; dx++)
     {
-      uint8 currentPixel = ImageGetPixel(img, x, y);
+      uint8 currentPixel = ImageGetPixel(img, dx, dy);
       uint8 newPixelValue = currentPixel * factor < maxvalue ? currentPixel * factor : maxvalue; // Returns the smaller value out of the two
-      ImageSetPixel(img, x, y, newPixelValue);
+      ImageSetPixel(img, dx, dy, newPixelValue);
     }    
   }
 }
@@ -491,24 +492,28 @@ Image ImageRotate(Image img) { ///
 
   if (rotate_Img == NULL) {
     // Handle memory allocation failure
+    errno = ENOMEM;
     return NULL;
   }
 
   // Step 1: Transpose the matrix
-  for (int x = 0; x < width; x++) {
-      for (int y = 0; y < height; y++) {
-          ImageSetPixel(rotate_Img, y, x, ImageGetPixel(img, x, y));
+  for (int dy = 0; dy < height; dy++) {
+      for (int dx = 0; dx < width; dx++) {
+          pixelValue = ImageGetPixel(img, dx, dy);
+          ImageSetPixel(rotate_Img, dy, dx, pixelValue);
       }
   }
 
   // Step 2: Reverse each column
-  for (int x = 0; x < width; x++) {
-      for (int y = 0, k = height - 1; y < k; y++, k--) {
-          pixelValue = ImageGetPixel(img, x, y);
-          ImageSetPixel(rotate_Img, x, y, ImageGetPixel(img, k, y));
-          ImageSetPixel(rotate_Img, k, y, pixelValue);
+  for (int dy = 0; dy < height; dy++) {
+      for (int dx = 0, k = width - 1; dx < k; dx++, k--) {
+          pixelValue = ImageGetPixel(img, dx, dy);
+          ImageSetPixel(rotate_Img, dx, dy, ImageGetPixel(img, k, dy));
+          ImageSetPixel(rotate_Img, k, dy, pixelValue);
       }
   }
+
+  return rotate_Img;
 }
 
 /// Mirror an image = flip left-right.
@@ -529,14 +534,15 @@ Image ImageMirror(Image img) { ///
 
   if (mirror_Img == NULL) {
     // Handle memory allocation failure
+    errno = ENOMEM;
     return NULL;
   }
-  for (int y = 0; y < height; y++) {
-    for (int x = 0; x < width; x++) {
-      uint8 pixelValue = ImageGetPixel(img, x, y);  //Gets the value from the OG picture
+  for (int dy = 0; dy < height; dy++) {
+    for (int dx = 0; dx < width; dx++) {
+      uint8 pixelValue = ImageGetPixel(img, dx, dy);  //Gets the value from the OG picture
       // gets the new flipped value for X
-      int mirroredX = width - 1 - x;
-      ImageSetPixel(mirror_Img, mirroredX, y, pixelValue);
+      int mirroredX = width - 1 - dx;
+      ImageSetPixel(mirror_Img, mirroredX, dy, pixelValue);
     }
   }
   return mirror_Img;
@@ -557,36 +563,31 @@ Image ImageMirror(Image img) { ///
 Image ImageCrop(Image img, int x, int y, int w, int h) { ///
   assert (img != NULL);
   assert (ImageValidRect(img, x, y, w, h));
-  // Insert your code here!
 
-  // Check if the cropping area is valid
-  if (!ImageValidRect(img, x, y, w, h)) 
-  {
+  // Insert your code here!
+  if (!ImageValidRect(img, x, y, w, h)) {
     errCause = "ERROR: Cropped area is not valid!";
     return NULL;
   }
 
-  // Create a new image for the cropped result
-  Image croppedImg = ImageCreate(w, h, img->maxval);
+  Image crop_Img = ImageCreate(w, h, img->maxval);
 
-  if (croppedImg == NULL) 
-  {
-    return NULL;
+  if (crop_Img == NULL) {
+  // Handle memory allocation failure
+  errno = ENOMEM;
+  return NULL;
   }
 
-  // Copy and paste pixels from original to cropped
-  for (int dy = 0; dy < h; dy++) 
-  {
-    for (int dx = 0; dx < w; dx++) 
-    {
+  for (int dy = 0; dy < h; dy++) {
+    for (int dx = 0; dx < w; dx++) {
       int originalX = x + dx;
       int originalY = y + dy;
       
       uint8 pixelValue = ImageGetPixel(img, originalX, originalY);
-      ImageSetPixel(croppedImg, dx, dy, pixelValue);
+      ImageSetPixel(crop_Img, dx, dy, pixelValue);
     }
   }
-  return croppedImg;
+  return crop_Img;
 }
 
 
@@ -599,8 +600,24 @@ Image ImageCrop(Image img, int x, int y, int w, int h) { ///
 void ImagePaste(Image img1, int x, int y, Image img2) { ///
   assert (img1 != NULL);
   assert (img2 != NULL);
-  assert (ImageValidRect(img1, x, y, img2->width, img2->height));
+
+  int width = img2->width;
+  int height = img2->height;
+
+  assert (ImageValidRect(img1, x, y, width, height));
   // Insert your code here!
+
+  if (!ImageValidRect(img1, x, y, width, height)) {
+    errCause = "ERROR: Paste area is not valid!";
+    return NULL;
+  }
+
+  for (int dy = 0; dy < height; dy++) {
+    for (int dx = 0; dx < width; dx++) {
+      uint8 pixelValue = ImageGetPixel(img2, dx, dy);
+      ImageSetPixel(img1, x + dx, y + dy, pixelValue);
+    }
+  }
 }
 
 /// Blend an image into a larger image.
@@ -612,8 +629,29 @@ void ImagePaste(Image img1, int x, int y, Image img2) { ///
 void ImageBlend(Image img1, int x, int y, Image img2, double alpha) { ///
   assert (img1 != NULL);
   assert (img2 != NULL);
-  assert (ImageValidRect(img1, x, y, img2->width, img2->height));
+
+  int width = img2->width;
+  int height = img2->height;
+
+  assert (ImageValidRect(img1, x, y, width, height));
   // Insert your code here!
+
+  for (int dy = 0; dy < height; dy++) {
+    for (int dx = 0; dx < width; dx++) {
+      // Get pixel intensity values from both images
+      int intensity1 = ImageGetPixel(img1, x + dx, y + dy);  // Assuming red channel represents intensity
+      int intensity2 = ImageGetPixel(img2, dx, dy);
+
+      // Perform alpha blending
+      int blendedIntensity = (1.0 - alpha) * intensity1 + alpha * intensity2;
+
+      // Saturate to prevent overflow/underflow
+      blendedIntensity = (blendedIntensity > 255) ? 255 : (blendedIntensity < 0) ? 0 : blendedIntensity;
+
+      // Set the blended pixel into img1
+      ImageSetPixel(img1, x + dx, y + dy, blendedIntensity);
+    }
+  }
 }
 
 /// Compare an image to a subimage of a larger image.
@@ -645,7 +683,6 @@ int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) { ///
 /// The image is changed in-place.
 void ImageBlur(Image img, int dx, int dy) { ///
   // Insert your code here!
-
   assert(img != NULL);
   assert(dx >= 0 && dy >= 0);
 
@@ -654,29 +691,24 @@ void ImageBlur(Image img, int dx, int dy) { ///
 
   Image blurredImg = ImageCreate(width, height, img->maxval);     //Temp storage for result
 
-  if (blurredImg == NULL) 
-  {
+  if (blurredImg == NULL) {
+    errno = ENOMEM;
     return;
   }
 
-  // Applying the filter ro all pixels
-  for (int y = 0; y < height; y++) 
-  {
-    for (int x = 0; x < width; x++)
-    {
+  // Applying the filter to all pixels
+  for (int y = 0; y < height; y++) {
+    for (int x = 0; x < width; x++){
       int sum = 0;
       int cnt = 0;
 
       // Calculate the avg value of pixels
-      for (int dy_i = -dy; dy_i <= dy; dy_i++)
-      {
-        for (int dx_i = -dx; dx_i <= dx; dx_i++)
-        {
+      for (int dy_i = -dy; dy_i <= dy; dy_i++){
+        for (int dx_i = -dx; dx_i <= dx; dx_i++){
           int nx = x + dx_i;
           int ny = y + dy_i;
 
-          if (ImageValidPos(img, nx, ny))
-          {
+          if (ImageValidPos(img, nx, ny)){
             sum += ImageGetPixel(img, nx, ny);
             cnt++;
           }
@@ -684,8 +716,7 @@ void ImageBlur(Image img, int dx, int dy) { ///
       }
 
       // Setting new value for blurred pixl
-      if (cnt > 0) 
-      {
+      if (cnt > 0) {
         uint8 meanValue = (uint8)(sum / cnt);
         ImageSetPixel(blurredImg, x, y, meanValue);
       }
@@ -693,10 +724,8 @@ void ImageBlur(Image img, int dx, int dy) { ///
   }
 
   // Copy the blurred result back to the original image
-  for (int y = 0; y < height; y++) 
-  {
-    for (int x = 0; x < width; x++) 
-    {
+  for (int y = 0; y < height; y++) {
+    for (int x = 0; x < width; x++) {
       uint8 pixelValue = ImageGetPixel(blurredImg, x, y);
       ImageSetPixel(img, x, y, pixelValue);
     }
