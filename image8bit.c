@@ -558,6 +558,35 @@ Image ImageCrop(Image img, int x, int y, int w, int h) { ///
   assert (img != NULL);
   assert (ImageValidRect(img, x, y, w, h));
   // Insert your code here!
+
+  // Check if the cropping area is valid
+  if (!ImageValidRect(img, x, y, w, h)) 
+  {
+    errCause = "ERROR: Cropped area is not valid!";
+    return NULL;
+  }
+
+  // Create a new image for the cropped result
+  Image croppedImg = ImageCreate(w, h, img->maxval);
+
+  if (croppedImg == NULL) 
+  {
+    return NULL;
+  }
+
+  // Copy and paste pixels from original to cropped
+  for (int dy = 0; dy < h; dy++) 
+  {
+    for (int dx = 0; dx < w; dx++) 
+    {
+      int originalX = x + dx;
+      int originalY = y + dy;
+      
+      uint8 pixelValue = ImageGetPixel(img, originalX, originalY);
+      ImageSetPixel(croppedImg, dx, dy, pixelValue);
+    }
+  }
+  return croppedImg;
 }
 
 
