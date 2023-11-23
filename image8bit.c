@@ -661,8 +661,8 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) { ///
   assert (img2 != NULL);
   assert (ImageValidPos(img1, x, y));
   // Insert your code here!
-  for (int dy = 0; dy < y+img2->height; dy++){
-    for (int dx = 0; dx < x+img2->width; dx++){
+  for (int dy = 0; dy < img2->height; dy++){
+    for (int dx = 0; dx < img2->width; dx++){
       if (ImageGetPixel(img1, x+dx, y+dy) != ImageGetPixel(img2, dx, dy)) return 0;
     }
   }
@@ -684,16 +684,28 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) { ///
 int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) { ///
   assert (img1 != NULL);
   assert (img2 != NULL);
+  
+  int w1 = img1->width;
+  int h1 = img1->height;  
+  
+  int w2 = img2->width;
+  int h2 = img2->height;
+
+
   // Insert your code here!
-  for (int dy = 0; dy <= img1->height-img2->height; dy++){
-    for (int dx = 0; dx <= img1->width-img2->width; dx++){
+  int counter = 0;
+  for (int dy = 0; dy <= (h1-h2); dy++){
+    for (int dx = 0; dx <= (w1-w2); dx++){
+      counter++;
       if (ImageMatchSubImage(img1, dx, dy, img2)) {
         *px = dx;
         *py = dy;
+        printf("No. of comaprisons: %d\n", counter);
         return 1;
       }
     }
   }
+  printf("No. of comaprisons: %d\n", counter);
   return 0;
 }
 

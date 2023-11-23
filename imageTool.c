@@ -190,7 +190,7 @@ int main(int ac, char* av[]) {
     } else if (strcmp(av[k], "locate") == 0) {
       if (n < 2) { err = 2; break; }
       fprintf(stderr, "Locating I%d in I%d\n", n-2, n-1);
-      if (ImageLocateSubImage(img[n-1], &x, &y, img[n-2])) {
+      if (ImageLocateSubImage(img[n-2], &x, &y, img[n-1])) {
         printf("# FOUND (%d,%d)\n", x, y);
       } else {
         printf("# NOTFOUND\n");
