@@ -14,13 +14,13 @@ TESTS = test1 test2 test3 test4 test5 test6 test7 test8 test9
 # Default rule: make all programs
 all: $(PROGS)
 
-imageTest: imageTest.o image8bit.o instrumentation.o error.o
+imageTest: imageTest.o image8bit.o instrumentation.o error.o -lm
 
-imageTest.o: image8bit.h instrumentation.h
+imageTest.o: image8bit.h instrumentation.h -lm
 
-imageTool: imageTool.o image8bit.o instrumentation.o error.o
+imageTool: imageTool.o image8bit.o instrumentation.o error.o -lm
 
-imageTool.o: image8bit.h instrumentation.h
+imageTool.o: image8bit.h instrumentation.h -lm
 
 # Rule to make any .o file dependent upon corresponding .h file
 %.o: %.h
@@ -74,6 +74,9 @@ test8: $(PROGS) setup
 test9: $(PROGS) setup
 	./imageTool test/original.pgm blur 7,7 save blur.pgm
 	cmp blur.pgm test/blur.pgm
+
+test10: $(PROGS) setup
+	./imageTool test/original.pgm test/original.pgm locate
 
 .PHONY: tests
 tests: $(TESTS)

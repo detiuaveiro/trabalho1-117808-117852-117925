@@ -454,7 +454,6 @@ void ImageBrighten(Image img, double factor) { ///
     {
       uint8 currentPixel = ImageGetPixel(img, dx, dy);
       uint8 result = round(currentPixel * factor);
-      printf("%d - %d, ", currentPixel, result);
       uint8 newPixelValue = result < maxvalue ? result : maxvalue; // Returns the smaller value out of the two
       ImageSetPixel(img, dx, dy, newPixelValue);
     }    
@@ -488,31 +487,24 @@ Image ImageRotate(Image img) { ///
   // Insert your code here!
   int width = img->width;
   int height = img->height;
-  uint8 pixelValue;
 
   Image rotate_Img = ImageCreate(width, height, img->maxval);
 
   if (rotate_Img == NULL) {
     // Handle memory allocation failure
+    ImageDestroy(&rotate_Img);
     errno = ENOMEM;
     return NULL;
   }
-
-  // Step 1: Transpose the matrix
   for (int dy = 0; dy < height; dy++) {
-      for (int dx = 0; dx < width; dx++) {
-          pixelValue = ImageGetPixel(img, dx, dy);
-          ImageSetPixel(rotate_Img, dy, dx, pixelValue);
-      }
-  }
-
-  // Step 2: Reverse each column
-  for (int dy = 0; dy < height; dy++) {
-      for (int dx = 0, k = width - 1; dx < k; dx++, k--) {
-          pixelValue = ImageGetPixel(img, dx, dy);
-          ImageSetPixel(rotate_Img, dx, dy, ImageGetPixel(img, k, dy));
-          ImageSetPixel(rotate_Img, k, dy, pixelValue);
-      }
+    for (int dx = 0; dx < width; dx++) {
+      // Rotate the pixel coordinates
+      uint8 pixelValue = ImageGetPixel(img, dx, dy);  //Gets the value from the OG picture
+      // gets the new flipped value for Y
+      int rotated_y = height - 1 - dx;
+      ImageSetPixel(rotate_Img, dy, rotated_y, pixelValue);
+        
+    }
   }
 
   return rotate_Img;
@@ -536,6 +528,7 @@ Image ImageMirror(Image img) { ///
 
   if (mirror_Img == NULL) {
     // Handle memory allocation failure
+    ImageDestroy(&mirror_Img);
     errno = ENOMEM;
     return NULL;
   }
@@ -640,17 +633,22 @@ void ImageBlend(Image img1, int x, int y, Image img2, double alpha) { ///
   for (int dy = 0; dy < height; dy++) {
     for (int dx = 0; dx < width; dx++) {
       // Get pixel intensity values from both images
-      int intensity1 = ImageGetPixel(img1, x + dx, y + dy);  // Assuming red channel represents intensity
-      int intensity2 = ImageGetPixel(img2, dx, dy);
+      uint8_t pixelValue = ImageGetPixel(img2, dx, dy);
 
       // Perform alpha blending
-      int blendedIntensity = (1.0 - alpha) * intensity1 + alpha * intensity2;
+      uint8_t blendedValue = round(alpha * pixelValue +  (1.0 - alpha) * ImageGetPixel(img1, x + dx, y + dy));
 
       // Saturate to prevent overflow/underflow
-      blendedIntensity = (blendedIntensity > 255) ? 255 : (blendedIntensity < 0) ? 0 : blendedIntensity;
+      // Saturate the result to ensure it stays within the valid range
+      if (blendedValue < 0.0) {
+          blendedValue = 0.0;
+      } 
+      else if (blendedValue > 255) {
+          blendedValue = 255;
+      }
 
       // Set the blended pixel into img1
-      ImageSetPixel(img1, x + dx, y + dy, blendedIntensity);
+      ImageSetPixel(img1, x + dx, y + dy, blendedValue);
     }
   }
 }
@@ -663,9 +661,9 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) { ///
   assert (img2 != NULL);
   assert (ImageValidPos(img1, x, y));
   // Insert your code here!
-  for(int dy = 0; dy < y+img2->height; dy++){
-    for(int dx = 0; dx < x+img2->width; dx++){
-      if(ImageGetPixel(img1, x+dx, y+dy) != ImageGetPixel(img2, dx, dy)) return 0;
+  for (int dy = 0; dy < y+img2->height; dy++){
+    for (int dx = 0; dx < x+img2->width; dx++){
+      if (ImageGetPixel(img1, x+dx, y+dy) != ImageGetPixel(img2, dx, dy)) return 0;
     }
   }
   return 1;
@@ -687,9 +685,9 @@ int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) { ///
   assert (img1 != NULL);
   assert (img2 != NULL);
   // Insert your code here!
-  for(int dy = 0; dy <= img1->height-img2->height; dy++){
-    for(int dx = 0; dx <= img1->width-img2->width; dx++){
-      if(ImageMatchSubImage(img1, dx, dy, img2)) {
+  for (int dy = 0; dy <= img1->height-img2->height; dy++){
+    for (int dx = 0; dx <= img1->width-img2->width; dx++){
+      if (ImageMatchSubImage(img1, dx, dy, img2)) {
         *px = dx;
         *py = dy;
         return 1;
@@ -720,21 +718,21 @@ void ImageBlur(Image img, int dx, int dy) { ///
     errno = ENOMEM;
     return;
   }
-
+  
   // Applying the filter to all pixels
   for (int y = 0; y < height; y++) {
     for (int x = 0; x < width; x++){
-      int sum = 0;
+      double sum = 0;
       int cnt = 0;
-
+      
       // Calculate the avg value of pixels
       for (int dy_i = -dy; dy_i <= dy; dy_i++){
         for (int dx_i = -dx; dx_i <= dx; dx_i++){
-          int nx = x + dx_i;
-          int ny = y + dy_i;
+          int blurX = x + dx_i;
+          int blurY = y + dy_i;
 
-          if (ImageValidPos(img, nx, ny)){
-            sum += ImageGetPixel(img, nx, ny);
+          if (blurX >= 0 && blurX < width && blurY >= 0 && blurY < height){
+            sum += ImageGetPixel(img, blurX, blurY);
             cnt++;
           }
         }
@@ -742,7 +740,7 @@ void ImageBlur(Image img, int dx, int dy) { ///
 
       // Setting new value for blurred pixl
       if (cnt > 0) {
-        uint8 meanValue = (uint8)(sum / cnt);
+        uint8 meanValue = (uint8)round(sum / (double)cnt);
         ImageSetPixel(blurredImg, x, y, meanValue);
       }
     }
