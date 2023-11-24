@@ -147,7 +147,7 @@ void ImageInit(void) { ///
   InstrCalibrate();
   InstrName[0] = "pixmem";  // InstrCount[0] will count pixel array acesses
   // Name other counters here...
-  
+  InstrName[1] = "comps";  
 }
 
 // Macros to simplify accessing instrumentation counters:
@@ -175,8 +175,6 @@ Image ImageCreate(int width, int height, uint8 maxval) { ///
   Image img = (Image) malloc(sizeof(struct image));
   if(img == NULL){
     errCause = "Memory allocation for image failed";
-    //free(img);  <-- From the provided comment I assume this is the responsibility of the caller
-    // errno = ENOMEM;  <--- IDK what to store in errno
     return NULL;
   }
 
@@ -195,9 +193,6 @@ Image ImageCreate(int width, int height, uint8 maxval) { ///
   for (int i = 0; i < width * height; i++) {
     img->pixel[i] = 0;
   }
-  // memset(img->pixel, 0, width*height*sizeof(uint8));
-  // memset is generally recommended for initializing large blocks of memory
-  // because it can be more efficient than manualy iterating through each element
   return img;
 }
 
@@ -338,7 +333,8 @@ void ImageStats(Image img, uint8* min, uint8* max) { ///
 }
 
 /// Check if pixel position (x,y) is inside img.
-int ImageValidPos(Image img, int x, int y) { ///
+int ImageValidPos(Image img, int x, int y) {  
+  // Insert your code here!
   assert (img != NULL);
   return (0 <= x && x < img->width) && (0 <= y && y < img->height);
 }
@@ -346,7 +342,7 @@ int ImageValidPos(Image img, int x, int y) { ///
 /// Check if rectangular area (x,y,w,h) is completely inside img.
 int ImageValidRect(Image img, int x, int y, int w, int h) { ///
   assert (img != NULL);
-
+  // Insert your code here!
   int width = img->width;
   int height = img->height;
 
@@ -376,18 +372,20 @@ static inline int G(Image img, int x, int y) {
 }
 
 /// Get the pixel (level) at position (x,y).
-uint8 ImageGetPixel(Image img, int x, int y) { ///
+uint8 ImageGetPixel(Image img, int x, int y) {
   assert (img != NULL);
   assert (ImageValidPos(img, x, y));
   PIXMEM += 1;  // count one pixel access (read)
+  // Insert your code here!
   return img->pixel[G(img, x, y)];
 } 
 
 /// Set the pixel at position (x,y) to new level.
-void ImageSetPixel(Image img, int x, int y, uint8 level) { ///
+void ImageSetPixel(Image img, int x, int y, uint8 level) {  
   assert (img != NULL);
   assert (ImageValidPos(img, x, y));
   PIXMEM += 1;  // count one pixel access (store)
+  // Insert your code here!
   img->pixel[G(img, x, y)] = level;
 } 
 
@@ -403,7 +401,7 @@ void ImageSetPixel(Image img, int x, int y, uint8 level) { ///
 /// Transform image to negative image.
 /// This transforms dark pixels to light pixels and vice-versa,
 /// resulting in a "photographic negative" effect.
-void ImageNegative(Image img) { ///
+void ImageNegative(Image img) { 
   assert (img != NULL);
   // Insert your code here!
   
@@ -437,7 +435,6 @@ void ImageThreshold(Image img, uint8 thr) { ///
       uint8 currentPixel = ImageGetPixel(img, dx, dy);
       if(currentPixel < thr) ImageSetPixel(img, dx, dy, 0);
       else ImageSetPixel(img, dx, dy, img->maxval);
-      //assert(currentPixel != ImageGetPixel(img, dx, dy)); // Might not be needed
     }    
   }
 }
@@ -641,7 +638,7 @@ void ImageBlend(Image img1, int x, int y, Image img2, double alpha) { ///
       // Perform alpha blending
       uint8_t blendedValue = round(alpha * pixelValue +  (1.0 - alpha) * ImageGetPixel(img1, x + dx, y + dy));
 
-      // Saturate to prevent overflow/underflow
+      // saturate to prevent overflow/underflow
       // Saturate the result to ensure it stays within the valid range
       if (blendedValue < 0.0) {
           blendedValue = 0.0;
@@ -671,14 +668,6 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) { ///
     }
   }
   return 1;
-  
-  
-  // Image cropped = ImageCrop(img1, x, y, img2->width, img2->height);
-  
-  // for(int i = 0; i < img2->height*img2->width; i++){
-  //   if(cropped->pixel[i] != img2->pixel[i]) return 0;
-  // }
-  // return 1;
 }
 
 /// Locate a subimage inside another image.
@@ -725,16 +714,18 @@ void ImageBlur(Image img, int dx, int dy) { ///
   assert(img != NULL);
   assert(dx >= 0 && dy >= 0);
 
+  InstrReset();
+  
   int width = img->width;
   int height = img->height;
 
-  Image blurredImg = ImageCreate(width, height, img->maxval);     //Temp storage for result
+  Image blurredImg = ImageCreate(width, height, img->maxval); //Temp storage for result
 
   if (blurredImg == NULL) {
     errno = ENOMEM;
     return;
   }
-  
+
   // Applying the filter to all pixels
   for (int y = 0; y < height; y++) {
     for (int x = 0; x < width; x++){
@@ -747,6 +738,7 @@ void ImageBlur(Image img, int dx, int dy) { ///
           int blurX = x + dx_i;
           int blurY = y + dy_i;
 
+          InstrCount[1]++;
           if (blurX >= 0 && blurX < width && blurY >= 0 && blurY < height){
             sum += ImageGetPixel(img, blurX, blurY);
             cnt++;
@@ -769,7 +761,7 @@ void ImageBlur(Image img, int dx, int dy) { ///
       ImageSetPixel(img, x, y, pixelValue);
     }
   }
-
+  InstrPrint();
   // Destroy the temporary image
   ImageDestroy(&blurredImg);
 }
