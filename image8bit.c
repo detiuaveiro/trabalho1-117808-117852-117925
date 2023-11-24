@@ -350,7 +350,10 @@ int ImageValidRect(Image img, int x, int y, int w, int h) { ///
   int width = img->width;
   int height = img->height;
 
-  if ((x + w) > width || (y + h) > height) return 0;
+  if ((x + w) > width || (y + h) > height){
+    printf("Invalid Rectangular area!\n");
+    return 0;
+  } 
   return 1;
 }
 
@@ -660,6 +663,7 @@ int ImageMatchSubImage(Image img1, int x, int y, Image img2) { ///
   assert (img1 != NULL);
   assert (img2 != NULL);
   assert (ImageValidPos(img1, x, y));
+  
   // Insert your code here!
   for (int dy = 0; dy < img2->height; dy++){
     for (int dx = 0; dx < img2->width; dx++){
@@ -700,7 +704,7 @@ int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) { ///
       if (ImageMatchSubImage(img1, dx, dy, img2)) {
         *px = dx;
         *py = dy;
-        printf("No. of comaprisons: %d\n", counter);
+        printf("\nNo. of comaprisons: %d\n\n", counter);
         return 1;
       }
     }

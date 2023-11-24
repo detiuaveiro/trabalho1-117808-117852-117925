@@ -62,7 +62,6 @@ test5: $(PROGS) setup
 test6: $(PROGS) setup
 	./imageTool test/original.pgm crop 100,100,100,100 save crop.pgm
 	cmp crop.pgm test/crop.pgm
-
 test7: $(PROGS) setup
 	./imageTool test/small.pgm test/original.pgm paste 100,100 save paste.pgm
 	cmp paste.pgm test/paste.pgm
@@ -76,8 +75,44 @@ test9: $(PROGS) setup
 	cmp blur.pgm test/blur.pgm
 
 test10: $(PROGS) setup
-	./imageTool pgm/small/art4_300x300.pgm crop 99,99,100,100 save crop2.pgm
+	./imageTool pgm/small/art4_300x300.pgm crop 0,0,100,100 save crop2.pgm
 	./imageTool pgm/small/art4_300x300.pgm crop2.pgm locate
+
+	./imageTool pgm/small/art4_300x300.pgm crop 0,1,100,100 save crop2.pgm
+	./imageTool pgm/small/art4_300x300.pgm crop2.pgm locate
+
+	./imageTool pgm/small/art4_300x300.pgm crop 0,2,100,100 save crop2.pgm
+	./imageTool pgm/small/art4_300x300.pgm crop2.pgm locate
+
+	./imageTool pgm/small/art4_300x300.pgm crop 1,1,100,125 save crop2.pgm
+	./imageTool pgm/small/art4_300x300.pgm crop2.pgm locate
+	
+	./imageTool pgm/small/art4_300x300.pgm crop 1,2,100,125 save crop2.pgm
+	./imageTool pgm/small/art4_300x300.pgm crop2.pgm locate
+
+	./imageTool pgm/small/art4_300x300.pgm crop 0,10,100,100 save crop2.pgm
+	./imageTool pgm/small/art4_300x300.pgm crop2.pgm locate
+
+	./imageTool pgm/small/art4_300x300.pgm crop 10,0,100,100 save crop2.pgm
+	./imageTool pgm/small/art4_300x300.pgm crop2.pgm locate
+
+	# ./imageTool pgm/small/art4_300x300.pgm crop 49,49,100,125 save crop2.pgm
+	# ./imageTool pgm/small/art4_300x300.pgm crop2.pgm locate
+
+	# ./imageTool pgm/small/art4_300x300.pgm crop 99,99,100,125 save crop2.pgm
+	# ./imageTool pgm/small/art4_300x300.pgm crop2.pgm locate
+
+	# ./imageTool pgm/small/art4_300x300.pgm crop 149,149,100,125 save crop2.pgm
+	# ./imageTool pgm/small/art4_300x300.pgm crop2.pgm locate
+
+	# ./imageTool pgm/small/art4_300x300.pgm crop 199,199,100,100 save crop2.pgm
+	# ./imageTool pgm/small/art4_300x300.pgm crop2.pgm locate
+
+	# ./imageTool pgm/small/art4_300x300.pgm crop 249,249,100,100 save crop2.pgm
+	# ./imageTool pgm/small/art4_300x300.pgm crop2.pgm locate
+
+	# ./imageTool pgm/small/art4_300x300.pgm crop 299,299,100,100 save crop2.pgm
+	# ./imageTool pgm/small/art4_300x300.pgm crop2.pgm locate
 
 .PHONY: tests
 tests: $(TESTS)
