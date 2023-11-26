@@ -45,7 +45,7 @@
 // Maximum value you can store in a pixel (maximum maxval accepted)
 const uint8 PixMax = 255;
 
-int counter = 0;
+long long int counter = 0;
 
 // Internal structure for storing 8-bit graymap images
 struct image {
@@ -695,12 +695,12 @@ int ImageLocateSubImage(Image img1, int* px, int* py, Image img2) { ///
       if (ImageMatchSubImage(img1, dx, dy, img2)) {
         *px = dx;
         *py = dy;
-        printf("\nNo. of comaprisons: %d\n\n", counter);
+        printf("\nNo. of comaprisons: %lld\n\n", counter);
         return 1;
       }
     }
   }
-  printf("No. of comaprisons: %d\n", counter);
+  printf("No. of comaprisons: %lld\n", counter);
   return 0;
 }
 

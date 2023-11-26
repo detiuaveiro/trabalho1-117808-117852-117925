@@ -115,6 +115,18 @@ test12: $(PROGS) setup
 
 	./imageTool pgm/large/ireland_03_1600x1200.pgm crop 300,525,200,100 save crop2.pgm
 	./imageTool pgm/large/ireland_03_1600x1200.pgm crop2.pgm locate
+	
+	./imageTool pgm/large/ireland_03_1600x1200.pgm crop 0,0,1200,800 save crop.pgm
+	./imageTool crop.pgm crop 100,100,100,100 save crop2.pgm
+	./imageTool crop.pgm crop2.pgm locate
+
+	# ./imageTool pgm/large/ireland_03_1600x1200.pgm crop 0,0,1000,1000 save crop.pgm
+	# ./imageTool crop.pgm crop 200,200,500,500 save crop2.pgm
+	# ./imageTool crop.pgm crop2.pgm locate
+	
+	# ./imageTool pgm/large/ireland_03_1600x1200.pgm crop 0,0,1000,1000 save crop.pgm
+	# ./imageTool crop.pgm crop 300,300,500,500 save crop2.pgm
+	# ./imageTool crop.pgm crop2.pgm locate
 
 # Count blur function comparisons with sub-image size growing
 test13: $(PROGS) setup
@@ -146,6 +158,10 @@ test13: $(PROGS) setup
 
 	./imageTool pgm/large/ireland_03_1600x1200.pgm crop 0,0,1000,1000 save crop2.pgm
 	./imageTool crop2.pgm blur 7,7 save blur2.pgm
+
+test14: $(PROGS) setup		
+	./imageTool pgm/pildikesed/Untitled.pgm crop 950,329,50,671 save crop2.pgm
+	./imageTool pgm/pildikesed/Untitled.pgm crop2.pgm locate
 
 .PHONY: tests
 tests: $(TESTS)
